@@ -1,0 +1,6 @@
+google.com, pub-0000000000000000, DIRECT
+google.com, pub-0000000000000000, RESELLER
+contact=info@mamco.com
+contact=https://mamco.com/contact-us
+subdomain=testing.mamco.com
+subdomain=admin.mamco.com

@@ -1,0 +1,52 @@
+{
+    "name": "olimpussoft/mamco-app",
+    "description": "Mini Framework para el desarrollo ce aplicaciones",
+    "type": "porject",
+    "version": "1.0.0",
+    "license": "GL2PS",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Miguel Morales",
+            "email": "miguelmoralescoterio@gmail.com",
+            "homepage": "https://olimpussoft.com/me/mmorales",
+            "role": "CEO/Developer"
+        }
+    ],
+    "support": {
+        "email": "miguelmoralescoterio@gmail.com"
+    },
+    "keywords": ["mamco","olimpus","olimpussoft"],
+    "repository": {
+        "type": "git",
+        "url": "https://gitlab.com/miguelmoralescoterio/mamco.git"
+    },
+    "bugs": "https://gitlab.com/miguelmoralescoterio/mamco/issues",
+    "archive": {
+        "exclude": ["storage/*"]
+    },
+    "private": true,
+    "autoload": {
+        "psr-4": {
+        },
+        "files": [
+            "helpers/mix.php"
+        ],
+        "classmap": [
+            "app/controllers/",
+            "app/middlewares/",
+            "app/models/"
+        ]
+    },
+    "require": {
+        "php" : "^7.2",
+        "doctrine/orm": "^2.6",
+        "twig/twig": "^2.11",
+        "ext-mbstring": "*",
+        "vlucas/phpdotenv": "^3.3",
+        "vakata/session": "^2.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.4"
+    }
+}

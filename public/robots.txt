@@ -1,0 +1,24 @@
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /downloads
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Googlebot-Mobile
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: Adsbot-Google
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
