@@ -7,12 +7,15 @@ umask(0000);
 //use Symfony\Component\HttpKernel\Controller;
 //use Symfony\Component\HttpFoundation\Response;
 //use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class GoogleListener {
+//class GoogleListener implements EventSubscriberInterface {
+class GoogleListener{     
 
     public function onResponse(ResponseEvent $event) {
         $response = $event->getResponse();
-
+        $response->headers->set('x-benutzer', 'sd='.ROOT);
+        flog(['onResponse' => 'sd='.ROOT]);
         if ($response->isRedirection()
             || ($response->headers->has('Content-Type') && false === strpos($response->headers->get('Content-Type'), 'html'))
             || 'html' !== $event->getRequest()->getRequestFormat()
@@ -20,6 +23,6 @@ class GoogleListener {
             return;
         }
 
-        $response->setContent($response->getContent().'GA CODE');
+        $response->setContent($response->getContent().'<br>GA CODE');
     }
 }

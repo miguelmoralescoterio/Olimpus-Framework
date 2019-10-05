@@ -46,9 +46,21 @@ if (is_array($env = @include SITE.'/.env.local.php')) {
     $dotenv = \Dotenv\Dotenv::create(SITE, '.env');
 	$dotenv->overload();
 	$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS','APP_ENV','APP_SESSID'])->notEmpty();
+    $dotenv->required(['APP_GTM']);
 	$dotenv->required('DB_PORT')->notEmpty()->isInteger();
 }
 
+defined('APP_ROOT')     or define('APP_ROOT', ROOT.'app'.DIRECTORY_SEPARATOR);
+defined('RESOURCES')    or define('RESOURCES', ROOT.'src'.DIRECTORY_SEPARATOR);
+defined('DB_ROOT')      or define('DB_ROOT', ROOT.'database'.DIRECTORY_SEPARATOR);
+defined('HLP_ROOT')     or define('HLP_ROOT', APP_ROOT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR);
+defined('STORAGE')      or define('STORAGE', ROOT.'storage'.DIRECTORY_SEPARATOR);
+
+if(!file_exists(ROOT.'config/config.defs.php')) {
+    trigger_error("No se encontro el archivo de configuracion de Bases de Datos, por favor verifque: ".ROOT.'config/config.defs.php', E_USER_ERROR);
+}
+$config = include 'config.defs.php';
+// DECIDIR SI COLOCAR EL ENV Y GLOBAL
 foreach ($_ENV as $k => $v) {
 	defined($k) or define($k, $v);
 }
@@ -99,8 +111,11 @@ switch (APP_ENV) {
         exit(1); // EXIT_ERROR
 }
 
+
+
 defined('APP_SESSID') or define('APP_SESSID',str_replace('.', '', ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'])));
 define('SESSIONAME', APP_SESSID);
+define('BASE_URL', base_url(true));
 defined("TAB1") or define("TAB1", "\t");
 defined("TAB2") or define("TAB2", str_repeat("\t",  2));
 defined("TAB3") or define("TAB3", str_repeat("\t",  3));
@@ -117,18 +132,22 @@ defined("TABD") or define("TABD", str_repeat("\t", 13));
 defined("TABE") or define("TABE", str_repeat("\t", 14));
 defined("TABF") or define("TABF", str_repeat("\t", 15));
 
-define('APP_ROOT', ROOT.'app'.DIRECTORY_SEPARATOR);
-define('RESOURCES', ROOT.'src'.DIRECTORY_SEPARATOR);
-define('HLP_ROOT', APP_ROOT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR);
-define('STORAGE', ROOT.'storage'.DIRECTORY_SEPARATOR);
-define('SITENAME', basename(SITE));
-define('SITESRC', RESOURCES.SITENAME.DIRECTORY_SEPARATOR);
-define('ROUTES', APP_ROOT.'routes'.DIRECTORY_SEPARATOR.SITENAME.DIRECTORY_SEPARATOR);
+defined('APP_ROOT')     or define('APP_ROOT', ROOT.'app'.DIRECTORY_SEPARATOR);
+defined('RESOURCES')    or define('RESOURCES', ROOT.'src'.DIRECTORY_SEPARATOR);
+defined('DB_ROOT')      or define('DB_ROOT', ROOT.'database'.DIRECTORY_SEPARATOR);
+defined('HLP_ROOT')     or define('HLP_ROOT', APP_ROOT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR);
+defined('STORAGE')      or define('STORAGE', ROOT.'storage'.DIRECTORY_SEPARATOR);
+defined('SITENAME')     or define('SITENAME', basename(SITE));
+defined('SITESRC')      or define('SITESRC', RESOURCES.SITENAME.DIRECTORY_SEPARATOR);
+defined('LAYOUTS')      or define('LAYOUTS', RESOURCES.'layouts'.DIRECTORY_SEPARATOR);
+defined('SITELAYOUT')   or define('SITELAYOUT', RESOURCES.'layouts/'.APP_LAYOUT.DIRECTORY_SEPARATOR);
+defined('ROUTES')       or define('ROUTES', APP_ROOT.'routes'.DIRECTORY_SEPARATOR.SITENAME.DIRECTORY_SEPARATOR);
 
 if(!is_dir(ROOT . 'storage/cache')) {
 	@mkdir(ROOT . 'storage/cache', 0777, true);
 }
 require_once HLP_ROOT.'posthelpers.php';
+require_once HLP_ROOT.'database.php';
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -149,8 +168,16 @@ $argumentResolver = new HttpKernel\Controller\ArgumentResolver();
 
 $App = new App($matcher, $controllerResolver, $argumentResolver);
 
+$App = new HttpKernel\HttpCache\HttpCache(
+    $App,
+    new HttpKernel\HttpCache\Store(STORAGE.'cache'),
+    new HttpKernel\HttpCache\Esi(), 
+    ['debug' => true]
+);
+
 $response = $App->handle($request);
 if($response instanceof Response) {
+    $response->setTtl(10);
 	$response->send();
 } else {
 	return $response;

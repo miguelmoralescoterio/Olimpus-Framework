@@ -3,6 +3,7 @@
   *
   * personale green: #67b868;
   *
+  #67b868
   67b868
 99eb97
 35873c
@@ -47,3 +48,6 @@ Ya no necesitamos Photoshop para recortar una imagen. Con la propiedad clip-path
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+
+
+  <a class="twitter-timeline" data-width="600" data-height="400" data-dnt="true" data-theme="dark" data-link-color="#67b868" href="https://twitter.com/OlimpusSoft?ref_src=twsrc%5Etfw">Tweets by OlimpusSoft</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

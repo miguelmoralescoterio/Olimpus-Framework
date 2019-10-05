@@ -6,8 +6,23 @@ umask(0000);
  */
 
 if (!function_exists('env')) {
-    function env(?string $value, ?bool $local=false) {
+    function env(?string $value, $default = null, ?bool $local=false) {
+        if(!getenv($value, $local)) {
+            return $default;
+        }
         return getenv($value, $local);
+    }
+}
+
+if (!function_exists('database_path')) {
+    /**
+     * Get the path to the database directory.
+     *
+     * @param  string  $path Optionally, a path to append to the database path
+     * @return string
+     */
+    function database_path($path = '') {
+        return (is_dir(DB_ROOT) ? DB_ROOT : ROOT);
     }
 }
 
@@ -209,5 +224,95 @@ if(!function_exists('render')) {
         echo $_route.'<br/>';
         $response = new Symfony\Component\HttpFoundation\Response(ob_get_clean());
         return $response;
+    }
+}
+
+if(!function_exists('mix')) {
+    function mix($path, $manifestDirectory = '') {
+        static $manifest;
+        if ($manifestDirectory && strpos($manifestDirectory, '/') !== 0) {
+            $manifestDirectory = "/{$manifestDirectory}";
+        }
+        /*if (! $manifest) {
+            if (! file_exists($manifestPath = $manifestDirectory.'/mix-manifest.json')) {
+                throw new Exception('The Mix manifest does not exist.');
+            }
+            $manifest = json_decode(file_get_contents($manifestPath), true);
+        }
+        if (strpos($path, '/') !== 0) {
+            $path = "/{$path}";
+        }
+        if (! array_key_exists($path, $manifest)) {
+            throw new Exception(
+                "Unable to locate Mix file: {$path}. Please check your ".
+                'webpack.mix.js output paths and try again.'
+            );
+        }
+        return file_exists($manifestDirectory.'/hot')
+                    ? "http://localhost:8080{$manifest[$path]}"
+                    : $manifest[$path];
+
+        */
+        return BASE_URL.$path;
+    }
+}
+
+if(!function_exists('assets')) {
+    function assets($path, $manifestDirectory = '') {
+        return BASE_URL.'assets/'.$path; //.(ENVIRONMENT == 'development' ? '?_='.uniqid().date('dmYhmsu') : '');
+    }
+}
+
+if(!function_exists('js')) {
+    function js($path, $manifestDirectory = '') {
+        return BASE_URL.'assets/js/'.$path; //.(ENVIRONMENT == 'development' ? '?_='.uniqid().date('dmYhmsu') : '');
+    }
+}
+
+if(!function_exists('css')) {
+    function css($path, $manifestDirectory = '') {
+        return BASE_URL.'assets/css/'.$path; //.(ENVIRONMENT == 'development' ? '?_='.uniqid().date('dmYhmsu') : '');
+    }
+}
+
+if(!function_exists('imgs')) {
+    function imgs($path, $manifestDirectory = '') {
+        return BASE_URL.'assets/imgs/'.$path; //.(ENVIRONMENT == 'development' ? '?_='.uniqid().date('dmYhmsu') : '');
+    }
+}
+
+if(!function_exists('resource')) {
+    /**
+     * 
+     */
+    function resource($path, $manifestDirectory = '') {    
+        if(file_exists(SITESRC.'assets/src/'.$path)) {
+            return BASE_URL.'assets/src/'.$path;
+        }
+        return BASE_URL.'download/resources/?file='.$path; //.(ENVIRONMENT == 'development' ? '&_='.uniqid().date('dmYhmsu') : '');
+    }
+}
+
+if(!function_exists('images')) {
+    /**
+     * 
+     */
+    function images($path, $manifestDirectory = '') { 
+        if(file_exists(SITESRC.'assets/uploads/'.$path)) {
+            return BASE_URL.'assets/uploads/'.$path;
+        }
+        return BASE_URL.'download/images/?file='.$path; //.(ENVIRONMENT == 'development' ? '&_='.uniqid().date('dmYhmsu') : '');
+    }
+}
+
+if(!function_exists('uploads')) {
+    /**
+     * 
+     */
+    function uploads($path, $manifestDirectory = '') {
+        if(file_exists(SITESRC.'assets/uploads/'.$path)) {
+            return BASE_URL.'assets/uploads/'.$path;
+        }
+        return BASE_URL.'download/images/?file='.$path; //.(ENVIRONMENT == 'development' ? '&_='.uniqid().date('dmYhmsu') : '');
     }
 }
